@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import streamlit as st
+import pickle 
+import pandas as pd
 from streamlit.logger import get_logger
 
 LOGGER = get_logger(__name__)
@@ -20,31 +22,55 @@ LOGGER = get_logger(__name__)
 
 def run():
     st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
+        page_title="Health Insurance Prediction",
     )
 
-    st.write("# Welcome to Streamlit! 👋")
-
-    st.sidebar.success("Select a demo above.")
-
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
+    html_temp = """
+    <div style="background-color:lightblue;padding:16px;">
+        <h2 style="color:black;text-align:center;">Health Insurance Cost Prediction</h2>
+    </div>
+    
     """
-    )
+
+    st.markdown(html_temp, unsafe_allow_html=True)
+    
+    model = pickle.load(open('model_healthinsurance_gbr', 'rb'))
+    
+        
+    p1 = st.slider("Enter Your Age",18,100)
+    
+    s1=st.selectbox("Sex",("Male","Female"))
+    if s1=="Male":
+        p2=1
+    else:
+        p2=0
+
+    p3 =st.number_input("Enter Your BMI Value")
+    p4 = st.slider("Enter Number of Children",0,4) 
+    
+    s2=st.selectbox("Smoker",("Yes","No"))
+    if s2=="Yes":
+        p5=1
+    else:
+        p5=0
+        
+    p6 = st.slider("Enter Your Region [1-4]",1,4)
+    
+    data = {
+        'age': p1,
+        'sex':p2,
+        'bmi':p3,
+        'children':p4,
+        'smoker':p5,
+        'region':p6
+        }
+    
+    df = pd.DataFrame(data, index=[0])
+    
+    if st.button('Predict'):
+        prediction = model.predict(df)
+        st.snow()
+        st.success('Insurance Amount is ${} '.format(round(prediction[0],2)))
 
 
 if __name__ == "__main__":
