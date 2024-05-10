@@ -22,7 +22,7 @@ LOGGER = get_logger(__name__)
 
 def run():
     st.set_page_config(
-        page_title="Health Insurance Cost Prediction",
+        page_title="Heart Disease Prediction",
     )
 
     html_temp = """
